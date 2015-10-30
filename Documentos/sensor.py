@@ -33,9 +33,7 @@ try:
       stop = time.time()
      
       elapsed = stop-start
-      
       distance = elapsed * 34000
-      
       distance = distance / 2
       
       if distance>10:

@@ -5,6 +5,7 @@ def worker(count):
   print "Este es el %s trabajo que hago hoy" % count
   return
 
+""" Lista de threads """
 threads = list()
 
 for i in range(3):
