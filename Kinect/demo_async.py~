@@ -15,8 +15,8 @@ def display_depth(dev, data, timestamp):
   #  M=[[int(num) for num in line.strip().split()] for line in data.split('\n')]
   array = frame_convert.pretty_depth(data)
   print array
-  #im = Image.fromarray(array)
-  #im.save("pic.jpg")
+  im = Image.fromarray(array)
+  im.save("pic.jpg")
 
 def display_rgb(dev, data, timestamp):
   data
