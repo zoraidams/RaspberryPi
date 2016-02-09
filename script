@@ -17,3 +17,16 @@ sudo ./setup.sh
 
 sudo /etc/init.d/webiopi start
 sudo update-rc.d webiopi defaults
+
+echo "Modificar fichero /etc/webiopi/config"
+echo "[SCRIPTS]"
+echo "# Load custom scripts syntax :"
+echo "# name = sourcefile"
+echo "#   each sourcefile may have setup, loop and destroy functions and macros"
+echo "#myscript = /home/pi/webiopi/examples/scripts/macros/script.py"
+echo "Añadiendo algo semejante a: cambot = /home/pi/cambot/cambot.py"
+
+echo "Generamos también passwd-file = /etc/webiopi/passwd"
+sudo webiopi-passwd
+cp Webiopi/index.html /var/www/
+sudo /etc/init.d/webiopi restart
