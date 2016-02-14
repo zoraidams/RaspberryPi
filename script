@@ -1,32 +1,31 @@
-sudo apt-get update
-sudo apt-get upgrade
+#sudo apt-get update
+#sudo apt-get upgrade
 
-sudo apt-get clean
-sudo dpkg --configure -a
-sudo apt-get autoremove
-sudo apt-get autoclean
+#sudo apt-get clean
+#sudo dpkg --configure -a
+#sudo apt-get autoremove
+#sudo apt-get autoclean
 
-sudo apt-get install apache2 -y
-sudo apt-get install php5 libapache2-mod-php5 -y
+#sudo apt-get install apache2 -y
+#sudo apt-get install php5 libapache2-mod-php5 -y
 
-wget http://sourceforge.net/projects/webiopi/files/WebIOPi-0.7.1.tar.gz/download
-#wget http://sourceforge.net/projects/webiopi/files/latest/download?source=typ_redirect
-tar xvzf WebIOPi-0.7.1.tar.gz
-cd WebIOPi-0.7.1
-sudo ./setup.sh
+#wget http://sourceforge.net/projects/webiopi/files/WebIOPi-0.7.1.tar.gz/download
+#tar xvzf WebIOPi-0.7.1.tar.gz
+#cd WebIOPi-0.7.1
+#sudo ./setup.sh
 
-sudo /etc/init.d/webiopi start
-sudo update-rc.d webiopi defaults
+#sudo /etc/init.d/webiopi start
+#sudo update-rc.d webiopi defaults
 
-echo "Modificar fichero /etc/webiopi/config"
-echo "[SCRIPTS]"
-echo "# Load custom scripts syntax :"
-echo "# name = sourcefile"
-echo "#   each sourcefile may have setup, loop and destroy functions and macros"
-echo "#myscript = /home/pi/webiopi/examples/scripts/macros/script.py"
-echo "Añadiendo algo semejante a: cambot = /home/pi/cambot/cambot.py"
+#echo "Modificar fichero /etc/webiopi/config"
+#echo "[SCRIPTS]"
+#echo "# Load custom scripts syntax :"
+#echo "# name = sourcefile"
+#echo "#   each sourcefile may have setup, loop and destroy functions and macros"
+#echo "#myscript = /home/pi/webiopi/examples/scripts/macros/script.py"
+#echo "Añadiendo algo semejante a: cambot = /home/pi/cambot/cambot.py"
 
-echo "Generamos también passwd-file = /etc/webiopi/passwd"
-sudo webiopi-passwd
-cp Webiopi/index.html /var/www/
-sudo /etc/init.d/webiopi restart
+#echo "Generamos también passwd-file = /etc/webiopi/passwd"
+#sudo webiopi-passwd
+#cp Webiopi/index.html /var/www/
+#sudo /etc/init.d/webiopi restart

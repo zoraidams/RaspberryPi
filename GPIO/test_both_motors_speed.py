@@ -17,13 +17,19 @@ GPIO.setup(ENB, GPIO.OUT)
 GPIO.setup(IN3, GPIO.OUT)
 GPIO.setup(IN4, GPIO.OUT)
 
+pA = GPIO.PWM(ENA, 100)
+pB = GPIO.PWM(ENB, 100)
+
+pA.start(100)
+pB.start(100)
+
 print("Hacia delante")
 # Ponemos la velocidad a la mitad
-GPIO.output(ENA, 128)
+pA.ChangeDutyCycle(50)
 GPIO.output(IN1, GPIO.HIGH)
 GPIO.output(IN2, GPIO.LOW)
 # Ponemos la velocidad a la mitad
-GPIO.output(ENB, 128)
+pB.ChangeDutyCycle(100)
 GPIO.output(IN3, GPIO.HIGH)
 GPIO.output(IN4, GPIO.LOW)
 
@@ -31,19 +37,21 @@ time.sleep(2)
 
 print("Hacia atras")
 # Ponemos la velocidad a la mitad
-GPIO.output(ENA, 128)
+pA.ChangeDutyCycle(100)
 GPIO.output(IN1, GPIO.LOW)
 GPIO.output(IN2, GPIO.HIGH)
 # Ponemos la velocidad a la mitad
-GPIO.output(ENB, 128)
+pB.ChangeDutyCycle(50)
 GPIO.output(IN3, GPIO.LOW)
 GPIO.output(IN4, GPIO.HIGH)
 time.sleep(2)
 
-GPIO.output(IN1, GPIO.LOW)
-GPIO.output(IN2, GPIO.LOW)
-GPIO.output(IN3, GPIO.LOW)
-GPIO.output(IN4, GPIO.LOW)
+pA.stop()
+#GPIO.output(IN1, GPIO.LOW)
+#GPIO.output(IN2, GPIO.LOW)
+pB.stop()
+#GPIO.output(IN3, GPIO.LOW)
+#GPIO.output(IN4, GPIO.LOW)
 
 GPIO.cleanup()
 
