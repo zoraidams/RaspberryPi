@@ -54,17 +54,17 @@ def stop():
     GPIO.output(IN4, GPIO.LOW)
 
 def distance():
-    GPIO.output(GPIO_TRIGGER, True)
+    GPIO.output(TRIGGER, True)
     time.sleep(0.00001)
-    GPIO.output(GPIO_TRIGGER, False)
-    star = time.time()
-    while GPIO.input(GPIO_ECHO)==0:
+    GPIO.output(TRIGGER, False)
+    start = time.time()
+    while GPIO.input(ECHO)==0:
       start = time.time()
     
-    while GPIO.input(GPIO_ECHO)==1:
+    while GPIO.input(ECHO)==1:
       stop = time.time()
      
-      elapsed = stop-start
+      elapsed = stop - start
       distance = elapsed * 34000
       distance = distance / 2
 
