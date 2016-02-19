@@ -2,6 +2,7 @@
 import webiopi
 import time
 import cv2
+import numpy
 
 # Libreria GPIO
 GPIO = webiopi.GPIO
@@ -56,28 +57,42 @@ def stop():
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.LOW)
 
-def distance():
+def save(movimiento):
+    # Abrimos fichero para incluir los datos al final
+    fil = open('/var/www/webiopi/data.txt', 'a')
+    # Capturamos imagen
+    cap = cv2.VideoCapture(0)
+    ret, img = cap.read()
+
+    numpy.set_printoptions(threshold='nan')
+
+    # Comprobamos la distancia
     GPIO.output(TRIGGER, True)
     time.sleep(0.00001)
     GPIO.output(TRIGGER, False)
     start = time.time()
     while GPIO.input(ECHO)==0:
-      start = time.time()
+        start = time.time()
     
     while GPIO.input(ECHO)==1:
-      stop = time.time()
+        stop = time.time()
      
-      elapsed = stop - start
-      distance = elapsed * 34000
-      distance = distance / 2
+        elapsed = stop - start
+        distance = elapsed * 34000
+        distance = distance / 2
+    
+    motor_izquierdo = False
+    motor_derecho = False
+    if movimiento=='forward':
+    	motor_izquierdo = True
+        motor_derecho = True
 
-    return distance
+    # Escribimos los datos en el fichero
+    fil.write('{'+str(img)+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+'}')
 
-def picture():
-    pass
-   # cap = cv2.VideoCapture(0)
-   # ret, img = cap.read()
-   # cv2.imwrite('pic.jpg', img)
+    # Cerramos el fichero
+    fil.close()
+
 
 # -------------------------------------------------- #
 # Definicion macros                                  #
@@ -86,32 +101,26 @@ def picture():
 @webiopi.macro
 def go_forward():
     forward()
-    distance()
-    picture()
+    save('forward')
 
 @webiopi.macro
 def go_backward():
     backward()
-    distance()
-#    picture()
+    save('backward')
 
 @webiopi.macro
 def turn_left():
     left()
-    distance()
-#    picture()
+    save('turn_left')
 
 @webiopi.macro
 def turn_right():
     right()
-    distance()
-#    picture()
+    save('turn_right')
 
 @webiopi.macro
 def stop_motors():
     stop()
-    distance()
-#    picture()
     
 # -------------------------------------------------- #
 # Iniciacializacion                                  #
