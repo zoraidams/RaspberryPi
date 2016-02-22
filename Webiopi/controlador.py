@@ -129,11 +129,11 @@ def stop_motors():
 def setup():
     # Instalacion GPIOs
     # Motor derecho
-    #GPIO.setFunction(ENA, GPIO.OUT)
+    GPIO.setFunction(ENA, GPIO.OUT)
     GPIO.setFunction(IN1, GPIO.OUT)
     GPIO.setFunction(IN2, GPIO.OUT)
     # Motor izquierdo
-    #GPIO.setFunction(ENB, GPIO.OUT)
+    GPIO.setFunction(ENB, GPIO.OUT)
     GPIO.setFunction(IN3, GPIO.OUT)
     GPIO.setFunction(IN4, GPIO.OUT)
     # Sensor distancia
@@ -143,11 +143,11 @@ def setup():
 def destroy():
     # Resetea las funciones GPIO
     # Motor derecho
-    #GPIO.setFunction(ENA, GPIO.IN)
+    GPIO.setFunction(ENA, GPIO.IN)
     GPIO.setFunction(IN1, GPIO.IN)
     GPIO.setFunction(IN2, GPIO.IN)
     # Motor izquierdo
-    #GPIO.setFunction(ENB, GPIO.IN)
+    GPIO.setFunction(ENB, GPIO.IN)
     GPIO.setFunction(IN3, GPIO.IN)
     GPIO.setFunction(IN4, GPIO.IN)
     # Sensor distancia
