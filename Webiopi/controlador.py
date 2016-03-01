@@ -59,12 +59,14 @@ def stop():
 
 def save(movimiento):
     # Abrimos fichero para incluir los datos al final
-    fil = open('/var/www/webiopi/data.txt', 'a')
+    #fil = open('/var/www/webiopi/data.txt', 'a')
     # Capturamos imagen
     cap = cv2.VideoCapture(0)
     ret, img = cap.read()
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite('/var/www/webiopi/pic.jpg', gray)
 
-    numpy.set_printoptions(threshold='nan')
+   # numpy.set_printoptions(threshold='nan')
 
     # Comprobamos la distancia
     GPIO.output(TRIGGER, True)
@@ -83,15 +85,22 @@ def save(movimiento):
     
     motor_izquierdo = False
     motor_derecho = False
+    movimiento = 0
     if movimiento=='forward':
     	motor_izquierdo = True
         motor_derecho = True
+    if movimiento=='backward':
+        moviemiento = 1
+    if movimiento=='turn_left':
+        motor_derecho = True
+    if movimiento=='turn_right':
+        motor_izquierdo = True
 
     # Escribimos los datos en el fichero
-    fil.write('{'+str(img)+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+'}')
+    #fil.write('{'+str(img)+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+'}')
 
     # Cerramos el fichero
-    fil.close()
+    #fil.close()
 
 
 # -------------------------------------------------- #
@@ -129,16 +138,21 @@ def stop_motors():
 def setup():
     # Instalacion GPIOs
     # Motor derecho
-    GPIO.setFunction(ENA, GPIO.OUT)
+    GPIO.setFunction(ENA, GPIO.PWM)
     GPIO.setFunction(IN1, GPIO.OUT)
     GPIO.setFunction(IN2, GPIO.OUT)
     # Motor izquierdo
-    GPIO.setFunction(ENB, GPIO.OUT)
+    GPIO.setFunction(ENB, GPIO.PWM)
     GPIO.setFunction(IN3, GPIO.OUT)
     GPIO.setFunction(IN4, GPIO.OUT)
     # Sensor distancia
     GPIO.setFunction(TRIGGER, GPIO.OUT)
     GPIO.setFunction(ECHO, GPIO.IN)
+    
+    GPIO.pulseRatio(ENA, 0.5)
+    GPIO.pulseRatio(ENB, 0.5)
+    
+    stop()
 
 def destroy():
     # Resetea las funciones GPIO
