@@ -66,7 +66,7 @@ def save(movimiento):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     cv2.imwrite('/var/www/webiopi/pic.jpg', gray)
 
-   # numpy.set_printoptions(threshold='nan')
+    # numpy.set_printoptions(threshold='nan')
 
     # Comprobamos la distancia
     GPIO.output(TRIGGER, True)

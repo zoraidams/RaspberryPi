@@ -26,8 +26,8 @@ ECHO = 6
 # Variables que controlan el movimiento
 motor_izquierdo = False # Motor izquierdo activado
 motor_derecho = False # Motor derecho activado
-movimiento = 0 # 0 hacia delante, 1 marcha atrás
-parado = 0 # Si está a 1 está parado
+movimiento = 0 # 0 hacia delante, 1 marcha atras
+parado = 1 # Si esta a 1 esta parado
 
 
 # -------------------------------------------------- #
@@ -41,13 +41,18 @@ def forward():
     GPIO.output(IN4, GPIO.HIGH)
     motor_izquierdo = True
     motor_derecho = True
+    movimiento = 0
+    parado = 0
 
 def backward():
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
+    motor_izquierdo = True
+    motor_derecho = True
     moviemiento = 1
+    parado = 0
 
 def left():
     GPIO.output(IN1, GPIO.HIGH)
@@ -55,6 +60,7 @@ def left():
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
     motor_derecho = True
+    parado = 0
 
 def right():
     GPIO.output(IN1, GPIO.LOW)
@@ -62,13 +68,17 @@ def right():
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.HIGH)
     motor_izquierdo = True
+    parado = 0
 
 def stop():
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.LOW)
+    motor_izquierdo = False
+    motor_derecho = False
     parado = 1
+
 
 # -------------------------------------------------- #
 # Daemon que guarda los datos                        #
@@ -99,18 +109,12 @@ def daemon():
         elapsed = stop - start
         distance = elapsed * 34000
         distance = distance / 2
-
+    print('Comienza la escritura de datos')
     # Escribimos los datos en el fichero
-    fil.write('{'+str(img)+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+'}')
-
+    fil.write('{'+str(img)+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+str(movimiento)+str(parado)+'}')
+    print('Acaba la escritura de datos')
     # Cerramos el fichero
     fil.close()
-    
-    print ("daemon")
-    time.sleep(1)
-d = threading.Thread(target=daemon, name='Daemon')
-d.setDaemon(True)
-d.start()
 
 
 # -------------------------------------------------- #
@@ -159,6 +163,11 @@ def setup():
     GPIO.pulseRatio(ENB, 0.5)
     
     stop()
+    # Thread daemon que guarda los datos
+    d = threading.Thread(target=daemon, name='Daemon')
+    d.setDaemon(True)
+    d.start()
+
 
 def destroy():
     # Resetea las funciones GPIO
