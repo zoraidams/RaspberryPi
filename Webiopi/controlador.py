@@ -57,51 +57,6 @@ def stop():
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.LOW)
 
-def save(movimiento):
-    # Abrimos fichero para incluir los datos al final
-    #fil = open('/var/www/webiopi/data.txt', 'a')
-    # Capturamos imagen
-    cap = cv2.VideoCapture(0)
-    ret, img = cap.read()
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite('/var/www/webiopi/pic.jpg', gray)
-
-    # numpy.set_printoptions(threshold='nan')
-
-    # Comprobamos la distancia
-    GPIO.output(TRIGGER, True)
-    time.sleep(0.00001)
-    GPIO.output(TRIGGER, False)
-    start = time.time()
-    while GPIO.input(ECHO)==0:
-        start = time.time()
-    
-    while GPIO.input(ECHO)==1:
-        stop = time.time()
-     
-        elapsed = stop - start
-        distance = elapsed * 34000
-        distance = distance / 2
-    
-    motor_izquierdo = False
-    motor_derecho = False
-    movimiento = 0
-    if movimiento=='forward':
-    	motor_izquierdo = True
-        motor_derecho = True
-    if movimiento=='backward':
-        moviemiento = 1
-    if movimiento=='turn_left':
-        motor_derecho = True
-    if movimiento=='turn_right':
-        motor_izquierdo = True
-
-    # Escribimos los datos en el fichero
-    #fil.write('{'+str(img)+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+'}')
-
-    # Cerramos el fichero
-    #fil.close()
-
 
 # -------------------------------------------------- #
 # Definicion macros                                  #
@@ -110,22 +65,18 @@ def save(movimiento):
 @webiopi.macro
 def go_forward():
     forward()
-    save('forward')
 
 @webiopi.macro
 def go_backward():
     backward()
-    save('backward')
 
 @webiopi.macro
 def turn_left():
     left()
-    save('turn_left')
 
 @webiopi.macro
 def turn_right():
     right()
-    save('turn_right')
 
 @webiopi.macro
 def stop_motors():

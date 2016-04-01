@@ -12,6 +12,9 @@ GPIO = webiopi.GPIO
 # Definicion constantes                              #
 # -------------------------------------------------- #
 
+# Modo test #
+test = 1 # 0 si el modo test esta desactivado, 1 si esta activado
+
 # Pines motor derecho
 ENA = 27
 IN1 = 17
@@ -23,11 +26,12 @@ IN4 = 24
 # Pines sensor distancia
 TRIGGER = 5
 ECHO = 6
-# Variables que controlan el movimiento
+# Inicializamos las variables globales a los dos threads
 motor_izquierdo = False # Motor izquierdo activado
 motor_derecho = False # Motor derecho activado
 movimiento = 0 # 0 hacia delante, 1 marcha atras
-parado = 1 # Si esta a 1 esta parado
+parado = 1 # 1 si esta parado, en caso contrario en movimiento
+escribiendo = 0 # 0 si no esta escribiendo, 1 en caso contrario
 
 
 # -------------------------------------------------- #
@@ -35,49 +39,105 @@ parado = 1 # Si esta a 1 esta parado
 # -------------------------------------------------- #
 
 def forward():
+    # Definicion de variables globales que controlan el movimiento
+    global motor_izquierdo
+    global motor_derecho
+    global movimiento
+    global parado
+    
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
-    motor_izquierdo = True
-    motor_derecho = True
-    movimiento = 0
-    parado = 0
+    if escribiendo==0:
+        if test==1:
+           print('--------------------------------------')
+           print('Modificando datos en forward')
+           print('--------------------------------------')
+        motor_izquierdo = True
+        print('----------', motor_izquierdo, '-----------')
+        motor_derecho = True
+        movimiento = 0
+        parado = 0
 
 def backward():
+    # Definicion de variables globales que controlan el movimiento
+    global motor_izquierdo
+    global motor_derecho
+    global movimiento
+    global parado
+
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
-    motor_izquierdo = True
-    motor_derecho = True
-    moviemiento = 1
-    parado = 0
+    if escribiendo==0:
+        if test==1:
+            print('--------------------------------------')
+            print('Modificando datos en backward')
+            print('--------------------------------------')
+        motor_izquierdo = True
+        motor_derecho = True
+        movimiento = 1
+        parado = 0
 
 def left():
+    # Definicion de variables globales que controlan el movimiento
+    global motor_izquierdo
+    global motor_derecho
+    global movimiento
+    global parado
+
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
-    motor_derecho = True
-    parado = 0
+    if escribiendo==0:
+        if test==1:
+            print('--------------------------------------')
+            print('Modificando datos en left')
+            print('--------------------------------------')
+        motor_derecho = True
+        parado = 0
 
 def right():
+    # Definicion de variables globales que controlan el movimiento
+    global motor_izquierdo
+    global motor_derecho
+    global movimiento
+    global parado
+
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.HIGH)
-    motor_izquierdo = True
-    parado = 0
+    if escribiendo==0:
+        if test==1:
+            print('--------------------------------------')
+            print('Modificando datos en right')
+            print('--------------------------------------')
+        motor_izquierdo = True
+        parado = 0
 
 def stop():
+    # Definicion de variables globales que controlan el movimiento
+    global motor_izquierdo
+    global motor_derecho
+    global movimiento
+    global parado
+
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.LOW)
-    motor_izquierdo = False
-    motor_derecho = False
-    parado = 1
+    if escribiendo==0:
+        if test==1:
+            print('--------------------------------------')
+            print('Modificando datos en stop')
+            print('--------------------------------------')
+        motor_izquierdo = False
+        motor_derecho = False
+        parado = 1
 
 
 # -------------------------------------------------- #
@@ -85,36 +145,51 @@ def stop():
 # -------------------------------------------------- #
 
 def daemon():
-    # Abrimos fichero para incluir los datos al final
-    fil = open('/var/www/webiopi/data.txt', 'a')
-    # Capturamos imagen
-    cap = cv2.VideoCapture(0)
-    ret, img = cap.read()
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #cv2.imwrite('/var/www/webiopi/pic.jpg', gray)
+    # Definicion de variable global para controlar la escritura de datos
+    global escribiendo
+    while True:
+        # Abrimos fichero para incluir los datos al final
+        fil = open('/var/www/webiopi/data.txt', 'a')
+        # Bloqueamos las variables de movimiento para que sean consistentes
+        escribiendo = 1
+        print('--------- motor izquierdo en daemon: ', motor_izquierdo, '----')
+        # Capturamos imagen
+        cap = cv2.VideoCapture(0)
+        ret, img = cap.read()
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        #cv2.imwrite('/var/www/webiopi/pic.jpg', gray)
+        numpy.set_printoptions(threshold='nan')
 
-    numpy.set_printoptions(threshold='nan')
-
-    # Comprobamos la distancia
-    GPIO.output(TRIGGER, True)
-    time.sleep(0.00001)
-    GPIO.output(TRIGGER, False)
-    start = time.time()
-    while GPIO.input(ECHO)==0:
-        start = time.time()
+        # Comprobamos la distancia
+        GPIO.output(TRIGGER, True)
+        time.sleep(0.00001)
+        GPIO.output(TRIGGER, False)
+        while GPIO.input(ECHO)==0:
+            start = time.time()
     
-    while GPIO.input(ECHO)==1:
-        stop = time.time()
+        while GPIO.input(ECHO)==1:
+            stop = time.time()
      
-        elapsed = stop - start
-        distance = elapsed * 34000
-        distance = distance / 2
-    print('Comienza la escritura de datos')
-    # Escribimos los datos en el fichero
-    fil.write('{'+str(img)+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+str(movimiento)+str(parado)+'}')
-    print('Acaba la escritura de datos')
-    # Cerramos el fichero
-    fil.close()
+            elapsed = stop - start
+            distance = elapsed * 34000
+            distance = distance / 2
+        if test==1:
+            print('--------------------------------------')
+            print('Comienza la escritura de datos')
+            print('--------------------------------------')
+        # Escribimos los datos en el fichero
+        fil.write('{'+str(img)+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+', '+str(movimiento)+', '+str(parado)+'}')
+        if test==1:
+            print('--------------------------------------')
+            print('Acaba la escritura de datos')
+            print('--------------------------------------')
+        # Cerramos el fichero
+        fil.close()
+        # Liberamos la captura
+        cap.release()
+        escribiendo = 0
+        # Esperamos un tiempo para poder captar datos otra vez
+        time.sleep(45)    
 
 
 # -------------------------------------------------- #
@@ -163,6 +238,7 @@ def setup():
     GPIO.pulseRatio(ENB, 0.5)
     
     stop()
+
     # Thread daemon que guarda los datos
     d = threading.Thread(target=daemon, name='Daemon')
     d.setDaemon(True)
