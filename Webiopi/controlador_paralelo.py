@@ -88,9 +88,9 @@ def left():
     global movimiento
     global parado
 
-    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
-    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.HIGH)
     if escribiendo==0:
         if test==1:
@@ -107,9 +107,9 @@ def right():
     global movimiento
     global parado
 
-    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.HIGH)
-    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
     if escribiendo==0:
         if test==1:
@@ -149,16 +149,13 @@ def daemon():
     global escribiendo
     while True:
         # Abrimos fichero para incluir los datos al final
-        fil = open('/var/www/webiopi/data.txt', 'a')
+        fil = open('/var/www/webiopi/data.txt', 'w')
         # Bloqueamos las variables de movimiento para que sean consistentes
         escribiendo = 1
         print('--------- motor izquierdo en daemon: ', motor_izquierdo, '----')
         # Capturamos imagen
         cap = cv2.VideoCapture(0)
         ret, img = cap.read()
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        #cv2.imwrite('/var/www/webiopi/pic.jpg', gray)
-        numpy.set_printoptions(threshold='nan')
 
         # Comprobamos la distancia
         GPIO.output(TRIGGER, True)
@@ -173,12 +170,20 @@ def daemon():
             elapsed = stop - start
             distance = elapsed * 34000
             distance = distance / 2
+
         if test==1:
             print('--------------------------------------')
             print('Comienza la escritura de datos')
             print('--------------------------------------')
+
+        st = time.time()
         # Escribimos los datos en el fichero
-        fil.write('{'+str(img)+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+', '+str(movimiento)+', '+str(parado)+'}')
+        fil.write('{'+str(img.tolist())+', '+str(distance)+', '+str(motor_izquierdo)+', '+str(motor_derecho)+', '+str(movimiento)+', '+str(parado)+'}')
+        fil.write(img)
+        sp = time.time()
+        el = sp - st
+        print(el)
+
         if test==1:
             print('--------------------------------------')
             print('Acaba la escritura de datos')
@@ -189,7 +194,7 @@ def daemon():
         cap.release()
         escribiendo = 0
         # Esperamos un tiempo para poder captar datos otra vez
-        time.sleep(45)    
+        time.sleep(10)    
 
 
 # -------------------------------------------------- #
