@@ -13,19 +13,21 @@ GPIO = webiopi.GPIO
 # Statement of variables                             #
 # -------------------------------------------------- #
 
-# Right motor pins
+# Debug mode
+debug = 1 # 0 disable, 1 enable
+# Right motor pinout
 ENA = 27
 IN1 = 17
 IN2 = 22
-# Left motor pins
+# Left motor pinout
 ENB = 18
 IN3 = 23
 IN4 = 24
-# Distance sensor pins
+# Distance sensor pinout
 TRIGGER = 5
 ECHO = 6
 # Initializate the global variables to control the movement
-motors = 00 # 00 both motors disable, 01 right motor enable, 10 left motor enable, 11 both motors enable 
+motors = '00' # 00 both motors disable, 01 right motor enable, 10 left motor enable, 11 both motors enable 
 movement = 0 # 0 stop, 1 forwards, 2 backwards
 writing = False # writing disable
 
@@ -44,7 +46,7 @@ def forward():
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
     if writing:
-        motors = 11
+        motors = '11'
         movement = 1
 
 def backward():
@@ -57,7 +59,7 @@ def backward():
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
     if writing:
-        motors = 11
+        motors = '11'
         movement = 2
 
 def left():
@@ -70,7 +72,7 @@ def left():
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.HIGH)
     if writing:
-        motors = 01
+        motors = '01'
         movement = 1
 
 def right():
@@ -84,7 +86,7 @@ def right():
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
     if writing:
-        motors = 10
+        motors = '10'
         movement = 1
 
 def stop():
@@ -97,7 +99,7 @@ def stop():
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.LOW)
     if writing:
-        motors = 00
+        motors = '00'
         movement = 0
 
 
@@ -121,23 +123,24 @@ def save_data_daemon():
         GPIO.output(TRIGGER, True)
         time.sleep(0.00001)
         GPIO.output(TRIGGER, False)
+        start = time.time()
         while GPIO.input(ECHO)==0:
             start = time.time()
-    
+        distance = -1
         while GPIO.input(ECHO)==1:
             stop = time.time()
-     
+
             elapsed = stop - start
             distance = elapsed * 34000
             distance = distance / 2
 
         st = time.time()
         # Write the data in the file
-        #fil.write('{'+base64.b64encode(img)+' | '+str(distance)+' | '+str(motors)+' | '+str(movement)+'}\n')
-        file.write('{'+str(distance)+' | '+str(motors)+' | '+str(movement)+'}\n')
+        file.write(base64.b64encode(img)+'\t'+str(distance)+'\t'+str(motors)+'\t'+str(movement)+'\n')
         sp = time.time()
         el = sp - st
-        print(el)
+        if debug==1:
+            print("It needed "+str(el)+" seconds to save the data")
 
         # Close the file
         file.close()
@@ -146,7 +149,9 @@ def save_data_daemon():
         writing = False
         # Wait to the next capture of data
         time.sleep(1)
-        print('-------------------FIN-------------------------')
+        if debug==1:
+            print("----------------- END -----------------")
+            time.sleep(1)
 
 
 # -------------------------------------------------- #
@@ -172,6 +177,7 @@ def turn_right():
 @webiopi.macro
 def stop_motors():
     stop()
+
     
 # -------------------------------------------------- #
 # Iniciacializacion                                  #
@@ -195,12 +201,12 @@ def setup():
     GPIO.pulseRatio(ENB, 0.5)
     
     stop()
-
+    
     # Thread daemon that save all the data
     d = threading.Thread(target=save_data_daemon, name='Daemon')
     d.setDaemon(True)
     d.start()
-
+    
 
 def destroy():
     # Reset the GPIO functions

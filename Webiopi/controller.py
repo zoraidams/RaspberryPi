@@ -11,15 +11,15 @@ GPIO = webiopi.GPIO
 # Statement of variables                             #
 # -------------------------------------------------- #
 
-# Right motor pins
+# Right motor pinout
 ENA = 27
 IN1 = 17
 IN2 = 22
-# Left motor pins
+# Left motor pinout
 ENB = 18
 IN3 = 23
 IN4 = 24
-# Distance sensor pins
+# Distance sensor pinout
 TRIGGER = 5
 ECHO = 6
 

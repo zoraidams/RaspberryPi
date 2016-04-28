@@ -2,7 +2,6 @@
 import cv2
 import numpy
 import base64
-import cv2
 
 ########################################################
 ## Encode the picture
