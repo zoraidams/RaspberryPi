@@ -14,7 +14,7 @@ GPIO = webiopi.GPIO
 # -------------------------------------------------- #
 
 # Debug mode
-debug = 1 # 0 disable, 1 enable
+debug = 0 # 0 disable, 1 enable
 # Right motor pinout
 ENA = 27
 IN1 = 17
@@ -151,7 +151,9 @@ def save_data_daemon():
         time.sleep(1)
         if debug==1:
             print("----------------- END -----------------")
-            time.sleep(1)
+            print("You can stop the program right now")
+            time.sleep(5)
+            print("Ok! You shouldn't try to stop the program now")
 
 
 # -------------------------------------------------- #
@@ -198,7 +200,7 @@ def setup():
     GPIO.setFunction(ECHO, GPIO.IN)
     
     GPIO.pulseRatio(ENA, 0.5)
-    GPIO.pulseRatio(ENB, 0.5)
+    GPIO.pulseRatio(ENB, 0.6)
     
     stop()
     

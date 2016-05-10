@@ -102,7 +102,7 @@ def setup():
     GPIO.setFunction(ECHO, GPIO.IN)
     
     GPIO.pulseRatio(ENA, 0.5)
-    GPIO.pulseRatio(ENB, 0.5)
+    GPIO.pulseRatio(ENB, 0.6)
     
     stop()
 

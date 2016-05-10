@@ -23,16 +23,16 @@ pB = GPIO.PWM(ENB, 100)
 pA.start(100)
 pB.start(100)
 
-# Ponemos la velocidad a la mitad
-pA.ChangeDutyCycle(90)
-GPIO.output(IN1, GPIO.HIGH)
-GPIO.output(IN2, GPIO.LOW)
-# Ponemos la velocidad a la mitad
-pB.ChangeDutyCycle(95)
-GPIO.output(IN3, GPIO.HIGH)
-GPIO.output(IN4, GPIO.LOW)
+# Change the speed of the motor A
+pA.ChangeDutyCycle(50)
+GPIO.output(IN1, GPIO.LOW)
+GPIO.output(IN2, GPIO.HIGH)
+# Change the speed of the motor B
+pB.ChangeDutyCycle(55)
+GPIO.output(IN3, GPIO.LOW)
+GPIO.output(IN4, GPIO.HIGH)
 
-time.sleep(2)
+time.sleep(1)
 
 pA.stop()
 pB.stop()
