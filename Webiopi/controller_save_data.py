@@ -77,8 +77,7 @@ def left():
 
 def right():
     # Global variables
-    global left_motor
-    global right_motor
+    global motors
     global movement
 
     GPIO.output(IN1, GPIO.HIGH)
@@ -110,15 +109,23 @@ def stop():
 def save_data_daemon():
     # Global variable to control the variables of the movement
     global writing
+    # Logging package seems to 
+    log = open('/var/www/webiopi/log.txt', 'w')
+
     while True:
+        log.write("INFO - Abro el fichero.\n")
         # Open the file to include data at the end
         file = open('/var/www/webiopi/data.txt', 'a')
+        log.write("INFO - Bloqueo el flag.\n")
         # Lock the variables to make the data consistent
         writing = True
+
+        log.write("INFO - Capturo la imagen.\n")
         # Take a picture
         cap = cv2.VideoCapture(0)
         ret, img = cap.read()
 
+        log.write("INFO - Capturo la distancia.\n")
         # Check the distance with the objects in front of it
         GPIO.output(TRIGGER, True)
         time.sleep(0.00001)
@@ -127,26 +134,26 @@ def save_data_daemon():
         while GPIO.input(ECHO)==0:
             start = time.time()
         distance = -1
+        log.write("INFO - Convierto la distancia.\n")
         while GPIO.input(ECHO)==1:
             stop = time.time()
-
             elapsed = stop - start
             distance = elapsed * 34000
             distance = distance / 2
 
-        st = time.time()
+        log.write("INFO - Escribo en el fichero.\n")
         # Write the data in the file
         file.write(base64.b64encode(img)+'\t'+str(distance)+'\t'+str(motors)+'\t'+str(movement)+'\n')
-        sp = time.time()
-        el = sp - st
-        if debug==1:
-            print("It needed "+str(el)+" seconds to save the data")
 
+        log.write("INFO - Cierro el fichero.\n")
         # Close the file
         file.close()
+        log.write("INFO - Libero la cam y el flag.\n")
         # Release the camera
         cap.release()
         writing = False
+
+        log.write("INFO - Sleep.\n")
         # Wait to the next capture of data
         time.sleep(1)
         if debug==1:
