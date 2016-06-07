@@ -2,8 +2,8 @@ import base64
 import numpy
 import cv2
 
-file_read = open("data.txt", "r")
-file_write = open("data_conversion_v4.txt", "w")
+file_read = open("../Data/data_final_v3.txt", "r")
+file_write = open("../prueba.txt", "w")
 
 for line in file_read:
     elements = line.split('\t')
@@ -32,5 +32,5 @@ for line in file_read:
     
 print("END")
 
-file_read.close()
 file_write.close()
+file_read.close()
