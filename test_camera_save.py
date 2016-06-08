@@ -14,7 +14,7 @@ ret, img = cap.read()
 file.write(str(img.tolist()))
 
 # Close the file
-fichero.close()
+file.close()
 
 # Release the camera
 cap.release()

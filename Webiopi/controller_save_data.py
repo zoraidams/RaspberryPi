@@ -26,6 +26,8 @@ IN4 = 24
 # Distance sensor pinout
 TRIGGER = 5
 ECHO = 6
+# Led pinout
+LED = 4
 # Initializate the global variables to control the movement
 motors = '00' # 00 both motors disable, 01 right motor enable, 10 left motor enable, 11 both motors enable 
 movement = 0 # 0 stop, 1 forwards, 2 backwards
@@ -43,8 +45,8 @@ def forward():
     
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
     if writing:
         motors = '11'
         movement = 1
@@ -56,8 +58,8 @@ def backward():
 
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
-    GPIO.output(IN3, GPIO.HIGH)
-    GPIO.output(IN4, GPIO.LOW)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
     if writing:
         motors = '11'
         movement = 2
@@ -82,8 +84,8 @@ def right():
 
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.HIGH)
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
     if writing:
         motors = '10'
         movement = 1
@@ -119,6 +121,8 @@ def save_data_daemon():
         log.write("INFO - Bloqueo el flag.\n")
         # Lock the variables to make the data consistent
         writing = True
+        # Put the led on
+        GPIO.output(LED, True)
 
         log.write("INFO - Capturo la imagen.\n")
         # Take a picture
@@ -151,16 +155,20 @@ def save_data_daemon():
         log.write("INFO - Libero la cam y el flag.\n")
         # Release the camera
         cap.release()
+        # Put the led off
+        GPIO.output(LED, False)
+        # Unlock the variable to make the data consistent
         writing = False
 
         log.write("INFO - Sleep.\n")
         # Wait to the next capture of data
-        time.sleep(1)
         if debug==1:
             print("----------------- END -----------------")
             print("You can stop the program right now")
             time.sleep(5)
             print("Ok! You shouldn't try to stop the program now")
+        else:
+            time.sleep(1)
 
 
 # -------------------------------------------------- #
@@ -205,6 +213,8 @@ def setup():
     # Distance sensor
     GPIO.setFunction(TRIGGER, GPIO.OUT)
     GPIO.setFunction(ECHO, GPIO.IN)
+    # Led
+    GPIO.setFunction(LED, GPIO.OUT)
     
     GPIO.pulseRatio(ENA, 0.5)
     GPIO.pulseRatio(ENB, 0.6)
@@ -230,3 +240,5 @@ def destroy():
     # Distance sensor
     GPIO.setFunction(TRIGGER, GPIO.IN)
     GPIO.setFunction(ECHO, GPIO.OUT)
+    # Led
+    GPIO.setFunction(LED, GPIO.IN)
