@@ -112,12 +112,12 @@ def save_data_daemon():
     # Global variable to control the variables of the movement
     global writing
     # Logging package seems to 
-    log = open('/var/www/webiopi/log.txt', 'w')
+    log = open('/usr/share/nginx/www/webiopi/log.txt', 'w')
 
     while True:
         log.write("INFO - Abro el fichero.\n")
         # Open the file to include data at the end
-        file = open('/var/www/webiopi/data.txt', 'a')
+        file = open('/usr/share/nginx/www/webiopi/data.txt', 'a')
         log.write("INFO - Bloqueo el flag.\n")
         # Lock the variables to make the data consistent
         writing = True
