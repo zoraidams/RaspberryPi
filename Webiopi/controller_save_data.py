@@ -47,9 +47,19 @@ def forward():
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
-    if writing:
+    if not writing:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tCambio de movimiento. Forwards.\n")
+	    print ("\t--------------------------------------------\n")
         motors = '11'
         movement = 1
+    else:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tEscribiendo, no se puede modificar.\n")
+	    print ("\t--------------------------------------------\n")
+
 
 def backward():
     # Global variables
@@ -60,9 +70,18 @@ def backward():
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
-    if writing:
+    if not writing:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tCambio de movimiento. Backwards.\n")
+	    print ("\t--------------------------------------------\n")
         motors = '11'
         movement = 2
+    else:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tEscribiendo, no se puede modificar.\n")
+	    print ("\t--------------------------------------------\n")
 
 def left():
     # Global variables
@@ -73,9 +92,18 @@ def left():
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.HIGH)
-    if writing:
+    if not writing:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tCambio de movimiento. Left.\n")
+	    print ("\t--------------------------------------------\n")
         motors = '01'
         movement = 1
+    else:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tEscribiendo, no se puede modificar.\n")
+	    print ("\t--------------------------------------------\n")
 
 def right():
     # Global variables
@@ -86,9 +114,18 @@ def right():
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
-    if writing:
+    if not writing:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tCambio de movimiento. Right.\n")
+	    print ("\t--------------------------------------------\n")
         motors = '10'
         movement = 1
+    else:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tEscribiendo, no se puede modificar.\n")
+	    print ("\t--------------------------------------------\n")
 
 def stop():
     # Global variables
@@ -99,9 +136,18 @@ def stop():
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.LOW)
-    if writing:
+    if not writing:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tCambio de movimiento. Stop.\n")
+	    print ("\t--------------------------------------------\n")
         motors = '00'
         movement = 0
+    else:
+	if debug==1:
+	    print ("\t--------------------------------------------\n")
+	    print ("\tEscribiendo, no se puede modificar.\n")
+	    print ("\t--------------------------------------------\n")
 
 
 # -------------------------------------------------- #
@@ -121,13 +167,14 @@ def save_data_daemon():
         log.write("INFO - Bloqueo el flag.\n")
         # Lock the variables to make the data consistent
         writing = True
+	if debug==1:
+	    print ("--------------------------------------------\n")
+	    print ("Bloqueo el flag.\n")
+	    print ("--------------------------------------------\n")
+
+        log.write("INFO - Enciendo el led.\n")
         # Put the led on
         GPIO.output(LED, True)
-
-        log.write("INFO - Capturo la imagen.\n")
-        # Take a picture
-        cap = cv2.VideoCapture(0)
-        ret, img = cap.read()
 
         log.write("INFO - Capturo la distancia.\n")
         # Check the distance with the objects in front of it
@@ -142,8 +189,13 @@ def save_data_daemon():
         while GPIO.input(ECHO)==1:
             stop = time.time()
             elapsed = stop - start
-            distance = elapsed * 34000
+            distance = elapsed * 34300
             distance = distance / 2
+
+        log.write("INFO - Capturo la imagen.\n")
+        # Take a picture
+        cap = cv2.VideoCapture(0)
+        ret, img = cap.read()
 
         log.write("INFO - Escribo en el fichero.\n")
         # Write the data in the file
@@ -155,10 +207,16 @@ def save_data_daemon():
         log.write("INFO - Libero la cam y el flag.\n")
         # Release the camera
         cap.release()
+        log.write("INFO - Apago el led.\n")
         # Put the led off
         GPIO.output(LED, False)
+
         # Unlock the variable to make the data consistent
         writing = False
+	if debug==1:
+	    print ("--------------------------------------------\n")
+	    print ("Desbloqueo el flag.\n")
+	    print ("--------------------------------------------\n")
 
         log.write("INFO - Sleep.\n")
         # Wait to the next capture of data
