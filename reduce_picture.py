@@ -2,10 +2,10 @@ import base64
 import numpy
 import cv2
 
-file_read = open("data_final_full_.txt", "r")
-file_write = open("data2.txt", "w")
+file_read = open("../data_final_full.txt", "r")
+file_write = open("../datax4.txt", "w")
 
-dim = 8
+dim = 4
 
 for line in file_read:
     elements = line.split('\t')
